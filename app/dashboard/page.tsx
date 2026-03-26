@@ -24,7 +24,7 @@ interface AnalysisHistory {
   keywords: string[]; image_category: string; created_at: string
 }
 
-type Section = 'analyser' | 'historique' | 'tickets' | 'academy' | 'enterprise' | 'communaute' | 'accueil' | 'parametres'
+type Section = 'analyser' | 'analyser-site' | 'historique' | 'tickets' | 'quiz' | 'academy' | 'communaute' | 'accueil' | 'parametres'
 type Mode = 'dark' | 'light'
 
 /* ── Theme ── */
@@ -35,15 +35,16 @@ const TH = {
 
 /* ── Sidebar nav items ── */
 const NAV_WORKSPACE = [
-  { id:'analyser',   icon:IconScan,     label:'Analyser' },
-  { id:'historique', icon:IconHistory,  label:'Historique' },
-  { id:'tickets',    icon:IconTicket,   label:'Mes Tickets' },
-  { id:'parametres', icon:IconSettings, label:'Paramètres' },
+  { id:'analyser',      icon:IconScan,     label:'Analyser image' },
+  { id:'analyser-site', icon:IconGlobe,    label:'Analyser un site' },
+  { id:'historique',    icon:IconHistory,  label:'Historique' },
+  { id:'tickets',       icon:IconTicket,   label:'Mes Tickets' },
+  { id:'quiz',          icon:IconQuiz,     label:'Quiz SEO' },
+  { id:'parametres',    icon:IconSettings, label:'Paramètres' },
 ]
 const NAV_PLATFORM = [
-  { id:'academy',    icon:IconAcademy,  label:'Academy' },
-  { id:'enterprise', icon:IconBuilding, label:'Enterprise' },
-  { id:'communaute', icon:IconUsers,    label:'Communauté' },
+  { id:'academy',    icon:IconAcademy, label:'Academy' },
+  { id:'communaute', icon:IconUsers,   label:'Communauté' },
 ]
 
 /* ── SVG Icons ── */
@@ -65,6 +66,12 @@ function IconMoon()     { return <svg width="14" height="14" viewBox="0 0 24 24"
 function IconUpload()   { return <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> }
 function IconEdit()     { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> }
 function IconInject()   { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> }
+function IconGlobe()    { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> }
+function IconQuiz()     { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="10"/></svg> }
+function IconPlay()     { return <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg> }
+function IconComment()  { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> }
+function IconClose()    { return <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg> }
+function IconPlus()     { return <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg> }
 
 /* ══════════════════════════════════════════ MAIN ══════════════════════════════════════════ */
 export default function Dashboard() {
@@ -107,6 +114,23 @@ export default function Dashboard() {
 
   /* Scan progress */
   const [scanProgress, setScanProgress] = useState(0)
+
+  /* Keywords editing */
+  const [kwInput, setKwInput] = useState('')
+
+  /* Quiz */
+  const [quizIndex, setQuizIndex]     = useState(0)
+  const [quizAnswer, setQuizAnswer]   = useState<number | null>(null)
+  const [quizScore, setQuizScore]     = useState(0)
+  const [quizDone, setQuizDone]       = useState(false)
+
+  /* Academy */
+  const [activeVideo, setActiveVideo] = useState(0)
+  const [newComment, setNewComment]   = useState('')
+  const [comments, setComments]       = useState<{author:string,text:string,time:string}[]>([
+    { author:'Karim B.', text:'Formation très claire, merci !', time:'il y a 2j' },
+    { author:'Sophie L.', text:'Le module Alt Text est excellent.', time:'il y a 5j' },
+  ])
 
   const t = TH[mode]
   const dk = mode === 'dark'
@@ -222,6 +246,28 @@ export default function Dashboard() {
   const markEdited = (field: string) => setEditedFields(prev => new Set(prev).add(field))
 
   const resetTool = () => { setImage(null); setImageFile(null); setResult(null); setStep('upload'); setError(null) }
+
+  const downloadImage = (format: 'jpeg' | 'webp') => {
+    if (!image) return
+    const img = new window.Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      ctx.drawImage(img, 0, 0)
+      const fname = (editTitle.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').slice(0,40)||'image-optimisee') + '-seo.' + (format === 'jpeg' ? 'jpg' : 'webp')
+      canvas.toBlob(blob => {
+        if (!blob) return
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url; a.download = fname; a.click()
+        URL.revokeObjectURL(url)
+      }, `image/${format}`, format === 'jpeg' ? 0.92 : 0.88)
+    }
+    img.src = image
+  }
 
   const scoreGrade = (s: number) => s >= 80 ? { color:'#4ADE80', label:'Excellent', bg:'rgba(74,222,128,.12)', bar:'#4ADE80' }
     : s >= 60 ? { color:'#FACC15', label:'Correct', bg:'rgba(250,204,21,.12)', bar:'#FACC15' }
@@ -377,20 +423,23 @@ export default function Dashboard() {
         <header style={{ padding:'18px 28px', borderBottom:`1px solid ${t.bd}`, display:'flex', alignItems:'center', justifyContent:'space-between', gap:16, background:t.bgA, position:'sticky', top:0, zIndex:100, backdropFilter:'blur(12px)' }}>
           <div>
             <h1 style={{ fontSize:18, fontWeight:700, letterSpacing:-0.3 }}>
-              {section === 'analyser'   && 'Analyse SEO'}
-              {section === 'historique' && 'Historique'}
-              {section === 'tickets'    && 'Mes Tickets'}
-              {section === 'academy'    && 'Academy'}
-              {section === 'enterprise' && 'Enterprise'}
-              {section === 'communaute' && 'Communauté'}
-              {section === 'accueil'    && 'Accueil'}
-              {section === 'parametres' && 'Paramètres'}
+              {section === 'analyser'      && 'Analyser une image'}
+              {section === 'analyser-site' && 'Analyser un site'}
+              {section === 'historique'    && 'Historique'}
+              {section === 'tickets'       && 'Mes Tickets'}
+              {section === 'quiz'          && 'Quiz SEO'}
+              {section === 'academy'       && 'Academy'}
+              {section === 'communaute'    && 'Communauté'}
+              {section === 'accueil'       && 'Accueil'}
+              {section === 'parametres'    && 'Paramètres'}
             </h1>
             <p style={{ fontSize:12, color:t.txM, marginTop:2 }}>
-              {section === 'analyser' && 'Uploadez une image · IA génère vos métadonnées SEO'}
-              {section === 'historique' && 'Vos 20 dernières analyses'}
-              {section === 'tickets' && 'Support VALT — réponse en 24h'}
-              {section === 'academy' && 'Formations SEO Images · du débutant à l\'expert'}
+              {section === 'analyser'      && 'Uploadez une image · SeoPic génère vos métadonnées SEO'}
+              {section === 'analyser-site' && 'Entrez une URL · audit SEO complet de vos images'}
+              {section === 'historique'    && 'Vos 20 dernières analyses'}
+              {section === 'tickets'       && 'Support SeoPic — réponse en 24h'}
+              {section === 'quiz'          && 'Testez vos connaissances SEO image'}
+              {section === 'academy'       && 'Formations SEO Images · du débutant à l\'expert'}
             </p>
           </div>
           <div style={{ display:'flex', gap:8, alignItems:'center' }}>
@@ -488,9 +537,9 @@ export default function Dashboard() {
                     <div style={{ background:t.sf, border:`1px solid ${t.bd}`, borderRadius:14, padding:'20px 20px' }}>
                       <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
                         <IconSparkle/>
-                        <span style={{ fontSize:12, fontWeight:700, color:'#E76F2E' }}>Prêt pour l'analyse IA</span>
+                        <span style={{ fontSize:12, fontWeight:700, color:'#E76F2E' }}>Prêt pour l'analyse SeoPic</span>
                       </div>
-                      <p style={{ fontSize:12, color:t.txS, lineHeight:1.6 }}>Claude AI va analyser votre image et générer automatiquement :<br/>alt text, meta title, meta description, keywords et score SEO.</p>
+                      <p style={{ fontSize:12, color:t.txS, lineHeight:1.6 }}>SeoPic va analyser votre image et générer automatiquement :<br/>alt text, méta titre, méta description, mots-clés et score SEO.</p>
                     </div>
                     <button onClick={analyze} className="btn-primary" style={{ background:'linear-gradient(135deg,#E76F2E,#F2994A)', color:'#fff', border:'none', borderRadius:12, padding:'14px 20px', fontSize:14, fontWeight:700, fontFamily:'inherit' }}>
                       ⚡ Lancer l'analyse IA
@@ -513,7 +562,7 @@ export default function Dashboard() {
                     <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
                       <div style={{ background:'rgba(0,0,0,.7)', backdropFilter:'blur(8px)', borderRadius:14, padding:'14px 22px', display:'flex', alignItems:'center', gap:12, border:'1px solid rgba(231,111,46,.3)' }}>
                         <div style={{ width:8, height:8, borderRadius:'50%', background:'#E76F2E', animation:'pulse 1s ease-in-out infinite' }}/>
-                        <span style={{ fontSize:13, fontWeight:600, color:'#fff' }}>Claude AI analyse votre image...</span>
+                        <span style={{ fontSize:13, fontWeight:600, color:'#fff' }}>SeoPic analyse votre image...</span>
                       </div>
                     </div>
                   </div>
@@ -577,7 +626,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div>
-                              <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:g.bg, borderRadius:8, padding:'4px 10px', marginBottom:6 }}>
+                              <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'transparent', border:`1px solid ${g.color}40`, borderRadius:8, padding:'4px 10px', marginBottom:6 }}>
                                 <div style={{ width:6, height:6, borderRadius:'50%', background:g.color }}/>
                                 <span style={{ fontSize:12, fontWeight:700, color:g.color }}>{g.label}</span>
                               </div>
@@ -672,19 +721,35 @@ export default function Dashboard() {
                     <div className="field-card" style={{ background:t.sf, border:`1px solid ${t.bd}`, borderRadius:14, padding:'14px 16px' }}>
                       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
                         <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                          <span style={{ fontSize:12, fontWeight:600 }}>Keywords SEO</span>
+                          <span style={{ fontSize:12, fontWeight:600 }}>Mots-clés SEO</span>
                           <span style={{ fontSize:9, background:'rgba(231,111,46,.12)', color:'#E76F2E', padding:'1px 6px', borderRadius:5, fontWeight:700 }}>IA</span>
                         </div>
                         <button className="copy-btn" onClick={() => copyText(editKws.join(', '),'kws')} style={{ background:'none', border:'none', cursor:'pointer', color: copied==='kws'?'#4ADE80':t.txM, padding:3 }}>
                           {copied==='kws' ? <IconCheck/> : <IconCopy/>}
                         </button>
                       </div>
-                      <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+                      <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:10 }}>
                         {editKws.map((kw,i) => (
-                          <span key={i} className="kw-tag" style={{ background:'rgba(231,111,46,.1)', border:'1px solid rgba(231,111,46,.25)', color:'#E76F2E', borderRadius:20, padding:'4px 10px', fontSize:12, fontWeight:500 }}>
+                          <span key={i} style={{ background:'rgba(231,111,46,.1)', border:'1px solid rgba(231,111,46,.25)', color:'#E76F2E', borderRadius:20, padding:'4px 10px 4px 12px', fontSize:12, fontWeight:500, display:'inline-flex', alignItems:'center', gap:6 }}>
                             {kw}
+                            <button onClick={() => setEditKws(editKws.filter((_,idx)=>idx!==i))} style={{ background:'none', border:'none', cursor:'pointer', color:'#E76F2E', padding:0, display:'flex', alignItems:'center', opacity:.7, lineHeight:1 }}>
+                              <IconClose/>
+                            </button>
                           </span>
                         ))}
+                      </div>
+                      <div style={{ display:'flex', gap:6 }}>
+                        <input
+                          type="text"
+                          value={kwInput}
+                          onChange={e => setKwInput(e.target.value)}
+                          onKeyDown={e => { if (e.key==='Enter'&&kwInput.trim()) { setEditKws([...editKws,kwInput.trim()]); setKwInput('') } }}
+                          placeholder="Ajouter un mot-clé…"
+                          style={{ flex:1, background:t.bg, border:`1px solid ${t.bd}`, borderRadius:8, padding:'7px 12px', fontSize:12, color:t.tx, outline:'none', fontFamily:'inherit' }}
+                        />
+                        <button onClick={() => { if(kwInput.trim()){ setEditKws([...editKws,kwInput.trim()]); setKwInput('') }}} style={{ background:'rgba(231,111,46,.12)', border:'1px solid rgba(231,111,46,.25)', borderRadius:8, padding:'7px 10px', cursor:'pointer', color:'#E76F2E', display:'flex', alignItems:'center' }}>
+                          <IconPlus/>
+                        </button>
                       </div>
                     </div>
 
@@ -706,13 +771,13 @@ export default function Dashboard() {
                       <button onClick={() => setInjected(true)} className="btn-primary" style={{ background: injected ? 'rgba(74,222,128,.1)' : 'linear-gradient(135deg,#E76F2E,#F2994A)', color: injected ? '#4ADE80' : '#fff', border: injected ? '1px solid rgba(74,222,128,.3)' : 'none', borderRadius:10, padding:'11px 0', fontSize:12.5, fontWeight:600, fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6, transition:'all .3s' }}>
                         <IconInject/> {injected ? 'Injecté ✓' : 'Injecter métadonnées'}
                       </button>
-                      <button className="btn-ghost" style={{ background:'transparent', border:`1px solid ${t.bd}`, color:t.txS, borderRadius:10, padding:'11px 0', fontSize:12.5, fontWeight:500, fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                      <button onClick={analyze} className="btn-ghost" style={{ background:'transparent', border:`1px solid ${t.bd}`, color:t.txS, borderRadius:10, padding:'11px 0', fontSize:12.5, fontWeight:500, fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
                         <IconRefresh/> Régénérer
                       </button>
-                      <button className="btn-primary" style={{ background:'linear-gradient(135deg,#1A1A18,#2A2A28)', color:'#fff', border:'1px solid rgba(255,255,255,.1)', borderRadius:10, padding:'11px 0', fontSize:12.5, fontWeight:600, fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                      <button onClick={() => downloadImage('jpeg')} disabled={!injected} className="btn-primary" style={{ background: injected ? 'linear-gradient(135deg,#1A1A18,#2A2A28)' : t.bd, color: injected ? '#fff' : t.txM, border: injected ? '1px solid rgba(255,255,255,.1)' : 'none', borderRadius:10, padding:'11px 0', fontSize:12.5, fontWeight:600, fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6, cursor: injected ? 'pointer' : 'not-allowed', opacity: injected ? 1 : 0.5, transition:'all .3s' }}>
                         <IconDownload/> Télécharger JPG
                       </button>
-                      <button className="btn-primary" style={{ background:'linear-gradient(135deg,#0F4C75,#1B6CA8)', color:'#fff', border:'none', borderRadius:10, padding:'11px 0', fontSize:12.5, fontWeight:600, fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                      <button onClick={() => downloadImage('webp')} disabled={!injected} className="btn-primary" style={{ background: injected ? 'linear-gradient(135deg,#0F4C75,#1B6CA8)' : t.bd, color: injected ? '#fff' : t.txM, border:'none', borderRadius:10, padding:'11px 0', fontSize:12.5, fontWeight:600, fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6, cursor: injected ? 'pointer' : 'not-allowed', opacity: injected ? 1 : 0.5, transition:'all .3s' }}>
                         <IconDownload/> Télécharger WebP
                       </button>
                     </div>
@@ -842,61 +907,201 @@ export default function Dashboard() {
           )}
 
           {/* ════════════ ACADEMY ════════════ */}
-          {section === 'academy' && (
-            <div className="card-enter">
-              {[
-                { level:'Débutant', color:'#4ADE80', icon:'🌱', courses:[{t:'SEO Images 101',d:'45 min',free:true},{t:'Alt Text : les règles d\'or',d:'20 min',free:true}] },
-                { level:'Intermédiaire', color:'#FACC15', icon:'⚡', courses:[{t:'EXIF, IPTC, XMP décryptés',d:'30 min',free:true},{t:"Google Images : mine d'or",d:'25 min',free:false}] },
-                { level:'Avancé', color:'#E76F2E', icon:'🚀', courses:[{t:'Audit SEO Images complet',d:'1h 20',free:false},{t:'Stratégie de contenus visuels',d:'50 min',free:false}] },
-              ].map((lvl,i) => (
-                <div key={i} style={{ marginBottom:24 }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-                    <span style={{ fontSize:16 }}>{lvl.icon}</span>
-                    <span style={{ fontSize:14, fontWeight:700 }}>{lvl.level}</span>
-                    <div style={{ flex:1, height:1, background:t.bd }}/>
-                    <span style={{ fontSize:11, color:t.txM }}>{lvl.courses.length} modules</span>
+          {section === 'academy' && (() => {
+            const VIDEOS = [
+              { id:0, title:'SEO Images 101 — Les bases', duration:'45 min', level:'Débutant', free:true,  desc:"Découvrez pourquoi les métadonnées d'images sont cruciales pour votre référencement. Alt text, EXIF, IPTC — on explique tout simplement.", thumb:'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=800&q=80' },
+              { id:1, title:'Alt Text : les règles d\'or',  duration:'20 min', level:'Débutant', free:true,  desc:"Comment rédiger un alt text parfait qui plaît à Google et aux utilisateurs. Exemples concrets, erreurs à éviter, outils pratiques.", thumb:'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80' },
+              { id:2, title:'EXIF, IPTC, XMP décryptés',   duration:'30 min', level:'Intermédiaire', free:true,  desc:"Plongez dans les métadonnées techniques. Comprendre chaque champ et l'optimiser pour Google Images et les moteurs de recherche.", thumb:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80' },
+              { id:3, title:"Google Images : mine d'or",   duration:'25 min', level:'Intermédiaire', free:false, desc:"Stratégies avancées pour dominer Google Images. Optimisation du contexte, balisage schema, et signaux de pertinence visuelle.", thumb:'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&q=80' },
+              { id:4, title:'Audit SEO Images complet',    duration:'1h 20',  level:'Avancé', free:false, desc:"Méthodologie complète d'audit SEO images. Crawler, analyse de masse, détection des problèmes et plan d'action prioritaire.", thumb:'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&q=80' },
+              { id:5, title:'Stratégie de contenus visuels',duration:'50 min', level:'Avancé', free:false, desc:"Créer une stratégie SEO visuelle long terme. Calendrier éditorial, types d'images performantes et mesure du ROI SEO.", thumb:'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=800&q=80' },
+            ]
+            const v = VIDEOS[activeVideo]
+            return (
+              <div className="card-enter" style={{ display:'grid', gridTemplateColumns:'1fr 340px', gap:20, alignItems:'start' }}>
+                {/* Player + info */}
+                <div>
+                  {/* Video thumb */}
+                  <div style={{ borderRadius:16, overflow:'hidden', position:'relative', aspectRatio:'16/9', background:'#000', marginBottom:16 }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={v.thumb} alt={v.title} style={{ width:'100%', height:'100%', objectFit:'cover', opacity:.75 }}/>
+                    <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <div style={{ width:60, height:60, borderRadius:'50%', background:'rgba(231,111,46,.9)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', boxShadow:'0 0 30px #E76F2E50', paddingLeft:4, color:'#fff' }}>
+                        <IconPlay/>
+                      </div>
+                    </div>
+                    <div style={{ position:'absolute', top:12, right:12, background:'rgba(0,0,0,.65)', backdropFilter:'blur(8px)', borderRadius:7, padding:'4px 10px', fontSize:11, fontWeight:600, color:'#fff' }}>{v.duration}</div>
+                    <div style={{ position:'absolute', top:12, left:12, background: v.free ? 'rgba(74,222,128,.9)' : 'rgba(231,111,46,.9)', borderRadius:7, padding:'4px 10px', fontSize:11, fontWeight:700, color:'#fff' }}>{v.free ? 'Gratuit' : 'Pro'}</div>
                   </div>
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
-                    {lvl.courses.map((c,j) => (
-                      <div key={j} style={{ background:t.sf, border:`1px solid ${t.bd}`, borderRadius:12, padding:'14px 16px', display:'flex', alignItems:'center', gap:12, cursor:'pointer', transition:'border-color .2s' }}
-                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor='rgba(231,111,46,.3)'}
-                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor=t.bd}>
-                        <div style={{ width:36, height:36, borderRadius:9, background: c.free ? 'rgba(74,222,128,.12)' : 'rgba(231,111,46,.1)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c.free?'#4ADE80':'#E76F2E'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+
+                  {/* Info */}
+                  <div style={{ marginBottom:16 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
+                      <span style={{ fontSize:11, fontWeight:700, background:'rgba(231,111,46,.12)', color:'#E76F2E', padding:'2px 8px', borderRadius:6 }}>{v.level}</span>
+                    </div>
+                    <h2 style={{ fontSize:18, fontWeight:800, marginBottom:10, letterSpacing:-.3 }}>{v.title}</h2>
+                    <p style={{ fontSize:13.5, color:t.txS, lineHeight:1.7 }}>{v.desc}</p>
+                  </div>
+
+                  {/* Comments */}
+                  <div style={{ background:t.sf, border:`1px solid ${t.bd}`, borderRadius:14, padding:'16px 18px' }}>
+                    <p style={{ fontSize:12, fontWeight:700, color:t.txM, textTransform:'uppercase', letterSpacing:1, marginBottom:14 }}>Commentaires ({comments.length})</p>
+                    <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:14 }}>
+                      {comments.map((c,i) => (
+                        <div key={i} style={{ display:'flex', gap:10, alignItems:'flex-start' }}>
+                          <div style={{ width:28, height:28, borderRadius:'50%', background:'linear-gradient(135deg,#E76F2E,#C4581E)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:'#fff', flexShrink:0 }}>{c.author[0]}</div>
+                          <div>
+                            <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:3 }}>
+                              <span style={{ fontSize:12, fontWeight:600 }}>{c.author}</span>
+                              <span style={{ fontSize:11, color:t.txM }}>{c.time}</span>
+                            </div>
+                            <p style={{ fontSize:12.5, color:t.txS, lineHeight:1.5 }}>{c.text}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ display:'flex', gap:8 }}>
+                      <input
+                        type="text"
+                        value={newComment}
+                        onChange={e => setNewComment(e.target.value)}
+                        onKeyDown={e => { if(e.key==='Enter'&&newComment.trim()){ setComments([...comments,{author:session?.user?.name||'Vous',text:newComment.trim(),time:'à l\'instant'}]); setNewComment('') }}}
+                        placeholder="Laisser un commentaire…"
+                        style={{ flex:1, background:t.bg, border:`1px solid ${t.bd}`, borderRadius:9, padding:'9px 14px', fontSize:12.5, color:t.tx, outline:'none', fontFamily:'inherit' }}
+                      />
+                      <button onClick={() => { if(newComment.trim()){ setComments([...comments,{author:session?.user?.name||'Vous',text:newComment.trim(),time:'à l\'instant'}]); setNewComment('') }}} className="btn-primary" style={{ background:'linear-gradient(135deg,#E76F2E,#F2994A)', color:'#fff', border:'none', borderRadius:9, padding:'9px 16px', fontSize:12, fontWeight:600, fontFamily:'inherit', display:'flex', alignItems:'center', gap:5 }}>
+                        <IconComment/> Publier
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Playlist */}
+                <div style={{ background:t.sf, border:`1px solid ${t.bd}`, borderRadius:16, overflow:'hidden' }}>
+                  <div style={{ padding:'14px 16px', borderBottom:`1px solid ${t.bd}` }}>
+                    <p style={{ fontSize:13, fontWeight:700 }}>Toutes les formations</p>
+                    <p style={{ fontSize:11, color:t.txM, marginTop:2 }}>{VIDEOS.length} vidéos</p>
+                  </div>
+                  <div style={{ overflowY:'auto', maxHeight:520 }}>
+                    {VIDEOS.map((vid,i) => (
+                      <div key={i} onClick={() => setActiveVideo(i)} style={{ display:'flex', gap:10, padding:'12px 14px', cursor:'pointer', borderBottom:`1px solid ${t.bd}`, background: activeVideo===i ? 'rgba(231,111,46,.06)' : 'transparent', transition:'background .2s', borderLeft: activeVideo===i ? '3px solid #E76F2E' : '3px solid transparent' }}>
+                        <div style={{ width:64, height:40, borderRadius:7, overflow:'hidden', flexShrink:0, position:'relative', background:'#000' }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={vid.thumb} alt="" style={{ width:'100%', height:'100%', objectFit:'cover', opacity:.7 }}/>
+                          <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                            <div style={{ width:16, height:16, borderRadius:'50%', background:'rgba(231,111,46,.85)', display:'flex', alignItems:'center', justifyContent:'center', paddingLeft:1, color:'#fff' }}>
+                              <svg width="7" height="7" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            </div>
+                          </div>
                         </div>
                         <div style={{ flex:1, minWidth:0 }}>
-                          <p style={{ fontSize:12.5, fontWeight:600, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{c.t}</p>
-                          <p style={{ fontSize:11, color:t.txM }}>{c.d}</p>
+                          <p style={{ fontSize:12, fontWeight:600, lineHeight:1.4, marginBottom:3, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' } as React.CSSProperties}>{vid.title}</p>
+                          <div style={{ display:'flex', gap:5, alignItems:'center' }}>
+                            <span style={{ fontSize:10, color:t.txM }}>{vid.duration}</span>
+                            <span style={{ fontSize:9, fontWeight:700, background: vid.free?'rgba(74,222,128,.12)':'rgba(231,111,46,.12)', color: vid.free?'#4ADE80':'#E76F2E', padding:'1px 5px', borderRadius:4 }}>{vid.free?'Gratuit':'Pro'}</span>
+                          </div>
                         </div>
-                        <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:6, background: c.free ? 'rgba(74,222,128,.12)' : 'rgba(231,111,46,.12)', color: c.free ? '#4ADE80' : '#E76F2E', flexShrink:0 }}>{c.free ? 'Gratuit' : 'Pro'}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            )
+          })()}
 
-          {/* ════════════ ENTERPRISE ════════════ */}
-          {section === 'enterprise' && (
+          {/* ════════════ ANALYSER SITE ════════════ */}
+          {section === 'analyser-site' && (
             <div className="card-enter" style={{ maxWidth:640, margin:'0 auto' }}>
               <div style={{ background:t.sf, border:`1px solid ${t.bd}`, borderRadius:20, padding:'40px 36px', textAlign:'center' }}>
-                <div style={{ width:56, height:56, background:'rgba(231,111,46,.08)', borderRadius:16, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px', color:'#E76F2E' }}><IconBuilding/></div>
-                <h2 style={{ fontSize:22, fontWeight:800, marginBottom:10 }}>Solutions Entreprise</h2>
-                <p style={{ fontSize:13.5, color:t.txS, lineHeight:1.7, maxWidth:420, margin:'0 auto 28px' }}>White label, API complète, équipes illimitées, account manager dédié et SLA garanti.</p>
+                <div style={{ width:64, height:64, background:'rgba(231,111,46,.08)', borderRadius:18, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px', color:'#E76F2E', border:'1px solid rgba(231,111,46,.15)', animation:'float 4s ease-in-out infinite' }}><IconGlobe/></div>
+                <span style={{ fontSize:11, fontWeight:700, color:'#E76F2E', textTransform:'uppercase', letterSpacing:2, background:'rgba(231,111,46,.1)', padding:'4px 14px', borderRadius:20 }}>Bientôt disponible</span>
+                <h2 style={{ fontSize:22, fontWeight:800, marginTop:16, marginBottom:10 }}>Audit SEO de site</h2>
+                <p style={{ fontSize:13.5, color:t.txS, lineHeight:1.7, maxWidth:400, margin:'0 auto 28px' }}>Entrez l'URL d'un site et SeoPic scannera toutes vos images : alt text manquants, score SEO global, recommandations priorisées.</p>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:28, textAlign:'left' }}>
-                  {['White label complet','Accès API','Équipes illimitées','Account manager','SLA garanti','Onboarding dédié'].map((f,i) => (
+                  {['Scan automatique','Score par image','Alt text manquants','Export rapport PDF','Recommandations IA','Suivi dans le temps'].map((f,i) => (
                     <div key={i} style={{ display:'flex', gap:7, alignItems:'center', fontSize:12.5, color:t.txS }}>
                       <span style={{ color:'#E76F2E' }}>✓</span>{f}
                     </div>
                   ))}
                 </div>
-                <a href="https://wa.me/212669335438?text=Bonjour%20je%20veux%20en%20savoir%20plus%20sur%20SeoPic%20Enterprise" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display:'inline-block', background:'linear-gradient(135deg,#E76F2E,#F2994A)', color:'#fff', textDecoration:'none', borderRadius:12, padding:'13px 28px', fontSize:13.5, fontWeight:700 }}>
-                  Nous contacter →
+                <a href="https://wa.me/212669335438?text=Je%20veux%20l'audit%20SEO%20de%20site%20SeoPic" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display:'inline-block', background:'linear-gradient(135deg,#E76F2E,#F2994A)', color:'#fff', textDecoration:'none', borderRadius:12, padding:'13px 28px', fontSize:13.5, fontWeight:700 }}>
+                  M'avertir au lancement →
                 </a>
               </div>
             </div>
           )}
+
+          {/* ════════════ QUIZ SEO ════════════ */}
+          {section === 'quiz' && (() => {
+            const QUESTIONS = [
+              { q:"Quelle est la longueur idéale d'un alt text pour Google ?", opts:['Moins de 50 caractères','Entre 100 et 125 caractères','Exactement 60 caractères','Plus de 200 caractères'], correct:1, exp:"Google recommande entre 100-125 caractères pour un alt text descriptif et riche en mots-clés." },
+              { q:"Quel format d'image est recommandé pour le SEO en 2024 ?", opts:['BMP','TIFF','WebP','GIF'], correct:2, exp:"WebP offre la meilleure compression avec qualité optimale, ce qui améliore la vitesse de chargement — facteur de ranking." },
+              { q:"Que signifie EXIF dans les métadonnées d'image ?", opts:['Extended File Info X','Exchangeable Image File Format','External Index Format','Expert Image Fix'], correct:1, exp:"EXIF (Exchangeable Image File Format) stocke des informations techniques sur la photo : appareil, date, géolocalisation..." },
+              { q:"Quel impact a la vitesse de chargement des images sur le SEO ?", opts:['Aucun impact','Impact mineur','Impact majeur sur les Core Web Vitals','Seulement sur mobile'], correct:2, exp:"Google utilise les Core Web Vitals (LCP, CLS, FID) comme facteurs de ranking — les images lentes pénalisent votre position." },
+              { q:"Pourquoi nommer correctement ses fichiers images ?", opts:['Aucune raison','Google indexe le nom du fichier','Pour s\'organiser','Pour réduire la taille'], correct:1, exp:"Google lit le nom du fichier et l'utilise pour comprendre le contenu de l'image. 'chaussure-sport-rouge.jpg' > 'IMG_001.jpg'." },
+            ]
+            const q = QUESTIONS[quizIndex]
+            return (
+              <div className="card-enter" style={{ maxWidth:680, margin:'0 auto' }}>
+                {quizDone ? (
+                  <div style={{ background:t.sf, border:`1px solid ${t.bd}`, borderRadius:20, padding:'48px 36px', textAlign:'center' }}>
+                    <div style={{ fontSize:48, marginBottom:16 }}>{quizScore >= 4 ? '🏆' : quizScore >= 3 ? '⭐' : '📚'}</div>
+                    <h2 style={{ fontSize:24, fontWeight:800, marginBottom:8 }}>{quizScore >= 4 ? 'Expert SEO !' : quizScore >= 3 ? 'Bon niveau !' : 'À améliorer'}</h2>
+                    <p style={{ fontSize:16, color:t.txS, marginBottom:24 }}>Score : <strong style={{ color:'#E76F2E' }}>{quizScore}/{QUESTIONS.length}</strong></p>
+                    <button onClick={() => { setQuizIndex(0); setQuizAnswer(null); setQuizScore(0); setQuizDone(false) }} className="btn-primary" style={{ background:'linear-gradient(135deg,#E76F2E,#F2994A)', color:'#fff', border:'none', borderRadius:12, padding:'13px 32px', fontSize:14, fontWeight:700, fontFamily:'inherit', cursor:'pointer' }}>
+                      Recommencer le quiz
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    {/* Progress */}
+                    <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:24 }}>
+                      <span style={{ fontSize:12, color:t.txM }}>Question {quizIndex+1}/{QUESTIONS.length}</span>
+                      <div style={{ flex:1, background:t.bd, borderRadius:4, height:5, overflow:'hidden' }}>
+                        <div style={{ width:`${((quizIndex+1)/QUESTIONS.length)*100}%`, height:'100%', background:'linear-gradient(90deg,#E76F2E,#F2994A)', borderRadius:4, transition:'width .4s' }}/>
+                      </div>
+                      <span style={{ fontSize:12, color:'#E76F2E', fontWeight:700 }}>{quizScore} pts</span>
+                    </div>
+
+                    <div style={{ background:t.sf, border:`1px solid ${t.bd}`, borderRadius:20, padding:'32px 32px' }}>
+                      <p style={{ fontSize:17, fontWeight:700, lineHeight:1.5, marginBottom:24 }}>{q.q}</p>
+
+                      <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:20 }}>
+                        {q.opts.map((opt,i) => {
+                          const isSelected = quizAnswer === i
+                          const isCorrect  = i === q.correct
+                          const showResult = quizAnswer !== null
+                          let bg = t.bg, border = `1px solid ${t.bd}`, color = t.tx
+                          if (showResult && isCorrect) { bg='rgba(74,222,128,.1)'; border='1px solid rgba(74,222,128,.4)'; color='#4ADE80' }
+                          else if (showResult && isSelected && !isCorrect) { bg='rgba(248,113,113,.1)'; border='1px solid rgba(248,113,113,.4)'; color='#F87171' }
+                          return (
+                            <button key={i} disabled={quizAnswer!==null} onClick={() => { setQuizAnswer(i); if(i===q.correct) setQuizScore(s=>s+1) }} style={{ background:bg, border, borderRadius:12, padding:'14px 18px', fontSize:13.5, fontWeight:500, color, fontFamily:'inherit', textAlign:'left', cursor:quizAnswer!==null?'default':'pointer', transition:'all .3s', display:'flex', alignItems:'center', gap:10 }}>
+                              <span style={{ width:24, height:24, borderRadius:'50%', background: showResult&&isCorrect?'rgba(74,222,128,.2)':showResult&&isSelected&&!isCorrect?'rgba(248,113,113,.2)':'rgba(231,111,46,.1)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, flexShrink:0, color: showResult&&isCorrect?'#4ADE80':showResult&&isSelected&&!isCorrect?'#F87171':'#E76F2E' }}>
+                                {String.fromCharCode(65+i)}
+                              </span>
+                              {opt}
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      {quizAnswer !== null && (
+                        <div style={{ background:'rgba(231,111,46,.06)', border:'1px solid rgba(231,111,46,.2)', borderRadius:12, padding:'14px 18px', marginBottom:20 }}>
+                          <p style={{ fontSize:13, color:t.txS, lineHeight:1.6 }}>💡 {q.exp}</p>
+                        </div>
+                      )}
+
+                      {quizAnswer !== null && (
+                        <button onClick={() => { if(quizIndex < QUESTIONS.length-1){ setQuizIndex(i=>i+1); setQuizAnswer(null) } else { setQuizDone(true) }}} className="btn-primary" style={{ width:'100%', background:'linear-gradient(135deg,#E76F2E,#F2994A)', color:'#fff', border:'none', borderRadius:12, padding:'13px 0', fontSize:14, fontWeight:700, fontFamily:'inherit', cursor:'pointer' }}>
+                          {quizIndex < QUESTIONS.length-1 ? 'Question suivante →' : 'Voir mes résultats'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })()}
 
           {/* ════════════ COMMUNAUTE ════════════ */}
           {section === 'communaute' && (

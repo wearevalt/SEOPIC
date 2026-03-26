@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 /* ═══ THEMES ═══ */
@@ -104,6 +105,7 @@ function SBadge({ label }: { label: string }) {
 
 /* ═══ MAIN ═══ */
 export default function Home() {
+  const { data: session } = useSession()
   const [mode, setMode]         = useState<Mode>('dark')
   const [annual, setAnnual]     = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -227,13 +229,13 @@ export default function Home() {
                 : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
               }
             </button>
-            {!mob && (
+            {!mob && !session && (
               <Link href="/auth/signin" className="nl" style={{ background:'none', border:'none', color:navTx, fontSize:13, padding:'6px 8px', cursor:'pointer', fontFamily:'inherit', textDecoration:'none', whiteSpace:'nowrap' }}>
                 Se connecter
               </Link>
             )}
-            <Link href="/auth/signin" className="bp" style={{ padding:'7px 16px', background:'linear-gradient(135deg,#E76F2E,#C4581E)', color:'#fff', textDecoration:'none', borderRadius:50, fontSize:13, fontWeight:700, boxShadow:'0 4px 14px #E76F2E35', display:'inline-block', whiteSpace:'nowrap', flexShrink:0 }}>
-              {mob ? 'Lancer' : "Lancer l'app →"}
+            <Link href={session ? '/dashboard' : '/auth/signin'} className="bp" style={{ padding:'7px 16px', background:'linear-gradient(135deg,#E76F2E,#C4581E)', color:'#fff', textDecoration:'none', borderRadius:50, fontSize:13, fontWeight:700, boxShadow:'0 4px 14px #E76F2E35', display:'inline-block', whiteSpace:'nowrap', flexShrink:0 }}>
+              {session ? (mob ? 'Dashboard' : 'Dashboard →') : (mob ? 'Lancer' : "Lancer l'app →")}
             </Link>
             {/* Hamburger */}
             {mob && (
@@ -255,8 +257,8 @@ export default function Home() {
               </button>
             ))}
             <div style={{ height:1, background:navBd, margin:'4px 10px' }}/>
-            <Link href="/auth/signin" style={{ display:'block', color:navTx, fontSize:14, fontWeight:500, padding:'12px 14px', textDecoration:'none' }}>
-              Se connecter
+            <Link href={session ? '/dashboard' : '/auth/signin'} style={{ display:'block', color:navTx, fontSize:14, fontWeight:500, padding:'12px 14px', textDecoration:'none' }}>
+              {session ? 'Dashboard →' : 'Se connecter'}
             </Link>
           </div>
         )}

@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
             },
             {
               type: 'text',
-              text: 'Analyze this image for SEO optimization. Return ONLY a valid JSON object with no markdown, no explanation, just the JSON. Fields: detectedContent (string), suggestedAltText (string max 125 chars), metaTitle (string max 60 chars), metaDescription (string max 160 chars), keywords (array of 5-8 strings), seoScore (number 0-100), improvements (array of 3 strings), imageCategory (string), tone (string)',
+              text: 'Analysez cette image pour l\'optimisation SEO. Répondez UNIQUEMENT avec un objet JSON valide, sans markdown, sans explication. Tous les textes doivent être en français. Champs requis: detectedContent (string - décrivez le contenu visuel en français), suggestedAltText (string max 125 chars en français), metaTitle (string max 60 chars en français), metaDescription (string max 160 chars en français), keywords (tableau de 5-8 mots-clés en français), seoScore (number 0-100), improvements (tableau de 3 conseils d\'amélioration en français), imageCategory (string en français), tone (string en français)',
             },
           ],
         }],
