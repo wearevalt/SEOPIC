@@ -99,7 +99,10 @@ export default function Dashboard() {
   const [editDesc,  setEditDesc]  = useState('')
   const [editKws,   setEditKws]   = useState<string[]>([])
   const [editedFields, setEditedFields] = useState<Set<string>>(new Set())
-  const [injected, setInjected]   = useState(false)
+  const [injected, setInjected]         = useState(false)
+  const [injecting, setInjecting]       = useState(false)
+  const [injectedImage, setInjectedImage] = useState<string | null>(null)
+  const [injectError, setInjectError]   = useState<string | null>(null)
 
   /* History */
   const [history, setHistory]           = useState<AnalysisHistory[]>([])
@@ -148,6 +151,8 @@ export default function Dashboard() {
       setEditKws([...result.keywords])
       setEditedFields(new Set())
       setInjected(false)
+      setInjectedImage(null)
+      setInjectError(null)
     }
   }, [result])
 
@@ -260,31 +265,80 @@ export default function Dashboard() {
 
   const resetTool = () => { setImage(null); setImageFile(null); setResult(null); setStep('upload'); setError(null) }
 
+  /* Real metadata injection via server API */
+  const injectMetadata = async () => {
+    if (!image || !imageFile || injecting) return
+    setInjecting(true); setInjectError(null)
+    try {
+      // Get image as base64 (strip data URL prefix)
+      const base64 = image.split(',')[1]
+      // Determine output mime type: always send as JPEG for canvas export compatibility
+      const mime = imageFile.type === 'image/webp' ? 'image/webp' : 'image/jpeg'
+      const res = await fetch('/api/inject', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageBase64: base64,
+          mimeType: mime,
+          altText: editAlt,
+          metaTitle: editTitle,
+          metaDescription: editDesc,
+          keywords: editKws,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Injection échouée')
+      // Store the injected image (base64) for download
+      const prefix = mime === 'image/webp' ? 'data:image/webp;base64,' : 'data:image/jpeg;base64,'
+      setInjectedImage(prefix + data.imageBase64)
+      setInjected(true)
+    } catch (err) {
+      setInjectError(err instanceof Error ? err.message : 'Erreur lors de l\'injection')
+    } finally { setInjecting(false) }
+  }
+
+  const makeSlug = () =>
+    (editTitle.toLowerCase()
+      .replace(/[àâä]/g,'a').replace(/[éèêë]/g,'e').replace(/[ùûü]/g,'u')
+      .replace(/[îï]/g,'i').replace(/[ôö]/g,'o').replace(/ç/g,'c')
+      .replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').slice(0,40)) || 'image-optimisee'
+
+  /* Download the already-injected image, optionally converting format */
   const downloadImage = (format: 'jpeg' | 'webp') => {
-    if (!image || !injected) return
-    const slug = (editTitle.toLowerCase().replace(/[àâä]/g,'a').replace(/[éèêë]/g,'e').replace(/[ùûü]/g,'u').replace(/[îï]/g,'i').replace(/[ôö]/g,'o').replace(/ç/g,'c').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').slice(0,40)) || 'image-optimisee'
+    if (!injectedImage || !injected) return
+    const slug  = makeSlug()
     const fname = `${slug}-seo.${format === 'jpeg' ? 'jpg' : 'webp'}`
-    const img = new window.Image()
-    img.onload = () => {
-      const canvas = document.createElement('canvas')
-      canvas.width = img.naturalWidth || img.width
-      canvas.height = img.naturalHeight || img.height
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return
-      ctx.drawImage(img, 0, 0)
-      canvas.toBlob(blob => {
-        if (!blob) return
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.style.display = 'none'
-        a.href = url
-        a.download = fname
-        document.body.appendChild(a)
-        a.click()
-        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url) }, 1000)
-      }, `image/${format}`, format === 'jpeg' ? 0.92 : 0.88)
+    const srcMime = injectedImage.startsWith('data:image/webp') ? 'image/webp' : 'image/jpeg'
+
+    if (srcMime === `image/${format}`) {
+      // Same format — download directly (metadata preserved)
+      const a = document.createElement('a')
+      a.style.display = 'none'
+      a.href = injectedImage
+      a.download = fname
+      document.body.appendChild(a); a.click()
+      setTimeout(() => document.body.removeChild(a), 500)
+    } else {
+      // Convert via canvas (WebP↔JPEG) — metadata stays in file header
+      const img = new window.Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = img.naturalWidth || img.width
+        canvas.height = img.naturalHeight || img.height
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+        ctx.drawImage(img, 0, 0)
+        canvas.toBlob(blob => {
+          if (!blob) return
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.style.display = 'none'; a.href = url; a.download = fname
+          document.body.appendChild(a); a.click()
+          setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url) }, 1000)
+        }, `image/${format}`, 0.92)
+      }
+      img.src = injectedImage
     }
-    img.src = image
   }
 
   const scoreGrade = (s: number) => s >= 80 ? { color:'#4ADE80', label:'Excellent', bg:'rgba(74,222,128,.12)', bar:'#4ADE80' }
@@ -671,9 +725,23 @@ export default function Dashboard() {
                     </div>
 
                     {/* Injection status */}
-                    <div style={{ background: injected ? 'rgba(74,222,128,.06)' : t.sf, border:`1px solid ${injected ? 'rgba(74,222,128,.25)' : t.bd}`, borderRadius:14, padding:'14px 16px', display:'flex', alignItems:'center', gap:10, transition:'all .3s' }}>
-                      <div style={{ width:8, height:8, borderRadius:'50%', background: injected ? '#4ADE80' : t.txM, boxShadow: injected ? '0 0 8px #4ADE8060' : 'none', flexShrink:0, transition:'all .3s' }}/>
-                      <span style={{ fontSize:12, color: injected ? '#4ADE80' : t.txM }}>{injected ? 'Métadonnées injectées ✓' : 'En attente d\'injection'}</span>
+                    {injectError && (
+                      <div style={{ background:'rgba(248,113,113,.08)', border:'1px solid rgba(248,113,113,.25)', borderRadius:12, padding:'12px 14px', fontSize:12, color:'#F87171' }}>
+                        ⚠ {injectError}
+                      </div>
+                    )}
+                    <div style={{ background: injected ? 'rgba(74,222,128,.06)' : t.sf, border:`1px solid ${injected ? 'rgba(74,222,128,.3)' : t.bd}`, borderRadius:14, padding:'14px 16px', transition:'all .4s' }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom: injected ? 8 : 0 }}>
+                        <div style={{ width:8, height:8, borderRadius:'50%', background: injected ? '#4ADE80' : t.txM, boxShadow: injected ? '0 0 8px #4ADE8060' : 'none', flexShrink:0, transition:'all .3s' }}/>
+                        <span style={{ fontSize:12, fontWeight:600, color: injected ? '#4ADE80' : t.txM }}>{injected ? 'XMP injectées dans le fichier ✓' : 'En attente d\'injection'}</span>
+                      </div>
+                      {injected && (
+                        <div style={{ display:'flex', flexDirection:'column', gap:3, paddingLeft:16 }}>
+                          {[['Alt Text', editAlt.slice(0,50)+'…'],['Meta Titre', editTitle],['Mots-clés', editKws.slice(0,3).join(', ')+(editKws.length>3?'…':'')]].map(([k,v])=>(
+                            <p key={k} style={{ fontSize:10.5, color:t.txM }}><span style={{ fontWeight:600, color:t.txS }}>{k} :</span> {v}</p>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {/* New analysis */}
@@ -788,8 +856,8 @@ export default function Dashboard() {
 
                     {/* Action buttons */}
                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginTop:4 }}>
-                      <button onClick={() => setInjected(true)} className="btn-primary" style={{ background: injected ? 'rgba(74,222,128,.1)' : 'linear-gradient(135deg,#E76F2E,#F2994A)', color: injected ? '#4ADE80' : '#fff', border: injected ? '1px solid rgba(74,222,128,.3)' : 'none', borderRadius:10, padding:'11px 0', fontSize:12.5, fontWeight:600, fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6, transition:'all .3s' }}>
-                        <IconInject/> {injected ? 'Injecté ✓' : 'Injecter métadonnées'}
+                      <button onClick={injectMetadata} disabled={injecting || injected} className="btn-primary" style={{ background: injected ? 'rgba(74,222,128,.08)' : 'linear-gradient(135deg,#E76F2E,#F2994A)', color: injected ? '#4ADE80' : '#fff', border: injected ? '1px solid rgba(74,222,128,.3)' : 'none', borderRadius:10, padding:'11px 0', fontSize:12.5, fontWeight:600, fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6, transition:'all .3s', cursor: injecting||injected ? 'default' : 'pointer', opacity: injecting ? 0.7 : 1 }}>
+                        {injecting ? <><span style={{ width:12,height:12,border:'2px solid rgba(255,255,255,.4)',borderTopColor:'#fff',borderRadius:'50%',animation:'spin 1s linear infinite',display:'inline-block'}}/>  Injection...</> : injected ? <>✓ Métadonnées injectées</> : <><IconInject/> Injecter les métadonnées</>}
                       </button>
                       <button onClick={analyze} className="btn-ghost" style={{ background:'transparent', border:`1px solid ${t.bd}`, color:t.txS, borderRadius:10, padding:'11px 0', fontSize:12.5, fontWeight:500, fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
                         <IconRefresh/> Régénérer
