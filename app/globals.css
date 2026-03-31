@@ -2,18 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  :root {
+    --background: 40 20% 98%;
+    --foreground: 40 10% 15%;
+    --card: 40 20% 96%;
+    --card-foreground: 40 10% 15%;
+    --popover: 40 20% 98%;
+    --popover-foreground: 40 10% 15%;
+    --primary: 22 82% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 40 15% 92%;
+    --secondary-foreground: 40 10% 25%;
+    --muted: 40 15% 92%;
+    --muted-foreground: 40 8% 50%;
+    --accent: 22 82% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 40 12% 86%;
+    --input: 40 12% 86%;
+    --ring: 22 82% 55%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 40 8% 9%;
+    --foreground: 40 10% 97%;
+    --card: 40 8% 12%;
+    --card-foreground: 40 10% 97%;
+    --popover: 40 8% 11%;
+    --popover-foreground: 40 10% 97%;
+    --primary: 22 82% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 40 8% 16%;
+    --secondary-foreground: 40 10% 85%;
+    --muted: 40 8% 16%;
+    --muted-foreground: 40 8% 55%;
+    --accent: 22 82% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 40 8% 20%;
+    --input: 40 8% 20%;
+    --ring: 22 82% 55%;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 }
 
-body {
-  background-color: #030303;
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+.glow-brand {
+  box-shadow: 0 0 40px hsl(22 82% 55% / 0.25), 0 0 80px hsl(22 82% 55% / 0.1);
+}
+
+.gradient-brand {
+  background: linear-gradient(135deg, #E76F2E 0%, #f59e42 60%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
