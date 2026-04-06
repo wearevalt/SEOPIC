@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-
-// adapte ce chemin selon ton projet
-import { subscriptionService } from "@/lib/services/subscriptionService";
+import { subscriptionService } from "@/lib/subscription-service";
 
 export async function GET(req: NextRequest) {
   try {
