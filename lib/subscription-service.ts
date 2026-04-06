@@ -3,7 +3,7 @@ import type { UserSubscription, PlanType, SubscriptionStatus, PaymentProvider } 
 import { PLAN_CONFIGS } from './types';
 
 export class SubscriptionService {
-  private supabase = getSupabaseAdmin();
+  private get supabase() { return getSupabaseAdmin(); }
 
   async getUserSubscription(email: string): Promise<UserSubscription | null> {
     const { data, error } = await this.supabase
