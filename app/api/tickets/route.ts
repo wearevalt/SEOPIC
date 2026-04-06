@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import { ticketCreateSchema } from '@/lib/schemas';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function GET(req: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   const email = req.nextUrl.searchParams.get('email');
 
   let query = supabaseAdmin
@@ -12,23 +13,31 @@ export async function GET(req: NextRequest) {
     .order('created_at', { ascending: false });
 
   if (email) {
-    // Validate email format before using as filter
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: 'Email invalide' }, { status: 400 });
     }
+
     query = query.eq('client_email', email);
   }
 
   const { data, error } = await query;
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
   return NextResponse.json(data);
 }
 
 export async function POST(req: NextRequest) {
-  // Rate limit: 5 tickets per 5 minutes per IP
+  const supabaseAdmin = getSupabaseAdmin();
+
   const ip = getClientIp(req);
-  const { success } = rateLimit(`tickets:${ip}`, { limit: 5, windowMs: 5 * 60_000 });
+  const { success } = rateLimit(`tickets:${ip}`, {
+    limit: 5,
+    windowMs: 5 * 60_000,
+  });
+
   if (!success) {
     return NextResponse.json(
       { error: 'Trop de requêtes. Réessayez dans 5 minutes.' },
@@ -59,6 +68,9 @@ export async function POST(req: NextRequest) {
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
   return NextResponse.json(data, { status: 201 });
 }
