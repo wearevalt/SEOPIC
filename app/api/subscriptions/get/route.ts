@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { subscriptionService } from "@/lib/subscription-service";
 
 export async function GET(req: NextRequest) {
   try {
@@ -18,11 +17,11 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const subscription = await subscriptionService.getUserSubscription(email);
-
     return NextResponse.json({
       success: true,
-      subscription,
+      subscription: null,
+      plan_type: "free",
+      email,
     });
   } catch (error) {
     console.error("GET /api/subscriptions/get error:", error);
