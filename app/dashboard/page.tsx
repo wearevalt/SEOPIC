@@ -1302,7 +1302,7 @@ export default function Dashboard() {
                 ))}
                 <div style={{ padding:'16px 20px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                   <span style={{ fontSize:12.5, color:t.txM }}>Plan</span>
-                  <span style={{ fontSize:12, fontWeight:700, color:'#E76F2E', background:'rgba(231,111,46,.1)', padding:'3px 10px', borderRadius:6 }}>Découverte</span>
+                  <span style={{ fontSize:12, fontWeight:700, color:'#E76F2E', background:'rgba(231,111,46,.1)', padding:'3px 10px', borderRadius:6 }}>{subscription ? PLAN_CONFIGS[subscription.plan_type].name : '—'}</span>
                 </div>
               </div>
               <button onClick={() => signOut({ callbackUrl:'/auth/signin' })} className="btn-ghost" style={{ marginTop:14, background:'transparent', border:`1px solid rgba(248,113,113,.25)`, color:'#F87171', borderRadius:10, padding:'11px 0', fontSize:13, fontWeight:500, fontFamily:'inherit', width:'100%' }}>
