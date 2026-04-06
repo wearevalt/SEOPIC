@@ -179,9 +179,12 @@ export default function Dashboard() {
       try {
         const res = await fetch('/api/subscriptions/get')
         if (res.ok) {
-          const data = await res.json() as UserSubscription
-          setSubscription(data)
-          setAnalysesRemaining(Math.max(0, data.analyses_per_month - data.analyses_used))
+          const json = await res.json()
+          const data: UserSubscription = json.subscription ?? json
+          if (data && data.plan_type) {
+            setSubscription(data)
+            setAnalysesRemaining(Math.max(0, data.analyses_per_month - data.analyses_used))
+          }
         }
       } catch (err) {
         console.error('Failed to fetch subscription:', err)
