@@ -6,15 +6,16 @@ import { useTheme } from 'next-themes'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight,
-  BarChart3,
   Bot,
+  BrainCircuit,
   Check,
   ChevronRight,
   ChevronUp,
   Compass,
+  Download,
   FileImage,
+  FileText,
   Globe,
-  Image as ImageIcon,
   Menu,
   Moon,
   ScanSearch,
@@ -23,13 +24,8 @@ import {
   Sparkles,
   Sun,
   Upload,
-  Wand2,
   X,
   Zap,
-  FileText,
-  Layers3,
-  BrainCircuit,
-  Gauge,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -60,48 +56,30 @@ const modules = [
   {
     icon: FileImage,
     title: 'Image Agent',
-    desc: 'Analyse, alt text, filename, title, description, compression et metadata depuis un seul flux.',
-    bullets: ['Alt text', 'Filename', 'Compression', 'Metadata'],
+    desc: 'Analyse les visuels, génère alt text, filename, title, description, compression et metadata.',
+    chips: ['Alt text', 'Filename', 'Compression', 'Metadata'],
   },
   {
     icon: ScanSearch,
     title: 'Site Audit Agent',
-    desc: 'Scanne vos URLs, détecte les images non optimisées, les pages faibles et les zones prioritaires.',
-    bullets: ['Scan URL', 'Pages faibles', 'Images non optimisées', 'Priorités'],
+    desc: 'Scanne vos URLs, détecte les images non optimisées, les pages faibles et les priorités SEO.',
+    chips: ['Scan URL', 'Pages faibles', 'Images non optimisées', 'Priorités'],
   },
   {
     icon: Search,
     title: 'Keyword Agent',
-    desc: 'Trouve les mots-clés liés à vos images et pages, et révèle les meilleures opportunités SEO.',
-    bullets: ['Intentions', 'Mots-clés', 'Opportunités', 'Priorisation'],
+    desc: 'Trouve les mots-clés liés à vos images et pages et révèle les meilleures opportunités.',
+    chips: ['Intentions', 'Mots-clés', 'Opportunités', 'Priorisation'],
   },
   {
     icon: FileText,
     title: 'Content Agent',
-    desc: 'Suggère des textes SEO pour pages produit, catégories et contenus éditoriaux.',
-    bullets: ['Pages produit', 'Catégories', 'Blog', 'Descriptions'],
+    desc: 'Suggère des textes SEO pour pages produit, blog, catégories et contenus à enrichir.',
+    chips: ['Pages produit', 'Catégories', 'Blog', 'Descriptions'],
   },
 ]
 
-const pillars = [
-  {
-    icon: Zap,
-    title: 'Votre SEO visuel travaille tout seul',
-    desc: 'Passez d’un outil manuel à une logique d’automatisation continue.',
-  },
-  {
-    icon: Globe,
-    title: 'Images, pages et contenus',
-    desc: 'Une seule plateforme pour gérer le SEO visuel et on-site.',
-  },
-  {
-    icon: Gauge,
-    title: 'Priorités claires',
-    desc: 'SeoPic vous montre quoi corriger, dans quel ordre, et pourquoi.',
-  },
-]
-
-const flowSteps = [
+const workflow = [
   {
     icon: Upload,
     title: 'Ajoutez une image ou une URL',
@@ -110,14 +88,14 @@ const flowSteps = [
   },
   {
     icon: BrainCircuit,
-    title: 'Les agents travaillent',
-    desc: 'Image Agent, Audit Agent, Keyword Agent et Content Agent coordonnent l’analyse.',
+    title: 'SeoPic coordonne les agents',
+    desc: 'Les agents analysent vos visuels, pages, mots-clés et contenus.',
     chip: 'Étape 02',
   },
   {
     icon: Compass,
-    title: 'Passez à l’action',
-    desc: 'Appliquez les recommandations, exportez les données et améliorez votre SEO plus vite.',
+    title: 'Appliquez les actions prioritaires',
+    desc: 'Exportez, corrigez et améliorez votre SEO plus vite avec une direction claire.',
     chip: 'Étape 03',
   },
 ]
@@ -233,8 +211,7 @@ function Navbar() {
           <nav className="hidden items-center gap-1 md:flex">
             {[
               { label: 'Modules', href: '#modules' },
-              { label: 'Démo', href: '#demo' },
-              { label: 'Comment ça marche', href: '#how-it-works' },
+              { label: 'Workflow', href: '#workflow' },
               { label: 'Tarifs', href: '#pricing' },
               { label: 'FAQ', href: '#faq' },
             ].map((item) => (
@@ -359,8 +336,7 @@ function Navbar() {
               <div className="flex flex-col gap-1">
                 {[
                   { label: 'Modules', href: '#modules' },
-                  { label: 'Démo', href: '#demo' },
-                  { label: 'Comment ça marche', href: '#how-it-works' },
+                  { label: 'Workflow', href: '#workflow' },
                   { label: 'Tarifs', href: '#pricing' },
                   { label: 'FAQ', href: '#faq' },
                 ].map((item) => (
@@ -399,19 +375,19 @@ function Hero() {
     <section className="relative overflow-hidden pt-28">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.div
-          animate={{ x: [0, 20, 0], y: [0, -15, 0] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute left-1/2 top-24 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-brand/12 blur-[120px]"
+          animate={{ x: [0, 18, 0], y: [0, -14, 0] }}
+          transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute left-1/2 top-24 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-brand/12 blur-[140px]"
         />
         <motion.div
-          animate={{ x: [0, -18, 0], y: [0, 20, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute right-0 top-0 h-[320px] w-[320px] rounded-full bg-orange-400/10 blur-[100px]"
+          animate={{ x: [0, -18, 0], y: [0, 18, 0] }}
+          transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute right-0 top-0 h-[340px] w-[340px] rounded-full bg-orange-400/10 blur-[110px]"
         />
         <motion.div
-          animate={{ x: [0, 15, 0], y: [0, 18, 0] }}
-          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute left-0 top-[260px] h-[280px] w-[280px] rounded-full bg-yellow-400/10 blur-[100px]"
+          animate={{ x: [0, 12, 0], y: [0, 15, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute left-0 top-[280px] h-[260px] w-[260px] rounded-full bg-yellow-400/10 blur-[100px]"
         />
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -453,9 +429,8 @@ function Hero() {
             className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-muted-foreground sm:text-xl"
           >
             Automatisez le SEO de vos images, pages et contenus depuis une seule
-            plateforme. SeoPic coordonne vos analyses, détecte les faiblesses,
-            révèle les opportunités et vous aide à améliorer automatiquement votre
-            SEO visuel et on-site.
+            plateforme. SeoPic améliore automatiquement votre SEO visuel et on-site
+            avec des agents spécialisés.
           </motion.p>
 
           <motion.div
@@ -470,7 +445,7 @@ function Hero() {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="min-w-[220px] rounded-full">
-              <a href="#demo">Voir la démo</a>
+              <a href="#modules">Découvrir les modules</a>
             </Button>
           </motion.div>
 
@@ -489,58 +464,75 @@ function Hero() {
             </span>
             <span className="flex items-center gap-1.5">
               <Zap className="h-4 w-4 text-brand" />
-              Priorités et actions claires
+              Actions priorisées
             </span>
           </motion.div>
         </motion.div>
 
         <motion.div
-          id="demo"
           initial={{ opacity: 0, y: 28, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.45 }}
           whileHover={{ y: -4 }}
           className="mx-auto mt-16 max-w-6xl"
         >
-          <div className="overflow-hidden rounded-[32px] border border-border/60 bg-card/70 shadow-[0_20px_80px_hsl(22_82%_55%/0.10)] backdrop-blur-xl">
+          <div className="overflow-hidden rounded-[34px] border border-border/60 bg-card/70 shadow-[0_20px_90px_hsl(22_82%_55%/0.10)] backdrop-blur-xl">
             <div className="border-b border-border/60 px-5 py-4">
               <div className="flex items-center gap-2">
                 <div className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
                 <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80" />
                 <div className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
-                <span className="ml-3 text-sm text-muted-foreground">SeoPic OS — aperçu plateforme</span>
+                <span className="ml-3 text-sm text-muted-foreground">SeoPic OS — workflow intelligent</span>
               </div>
             </div>
 
-            <div className="grid gap-0 xl:grid-cols-[1.15fr_0.85fr]">
+            <div className="grid gap-0 xl:grid-cols-[1.05fr_0.95fr]">
               <div className="border-b border-border/60 p-6 xl:border-b-0 xl:border-r">
-                <div className="grid gap-4 md:grid-cols-2">
-                  {modules.map((module, i) => (
-                    <motion.div
-                      key={module.title}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15 + i * 0.08 }}
-                      whileHover={{ y: -4 }}
-                      className="rounded-2xl border border-white/10 bg-background/50 p-5"
-                    >
-                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/15">
-                        <module.icon className="h-5 w-5 text-brand" />
+                <div className="grid gap-4">
+                  <div className="rounded-2xl border border-white/10 bg-background/55 p-5">
+                    <div className="mb-3 flex items-center gap-3">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand/15">
+                        <Upload className="h-5 w-5 text-brand" />
                       </div>
-                      <h3 className="text-base font-bold">{module.title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{module.desc}</p>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {module.bullets.map((item) => (
-                          <span
-                            key={item}
-                            className="rounded-full border border-border bg-secondary px-2.5 py-1 text-[11px] text-muted-foreground"
-                          >
-                            {item}
-                          </span>
-                        ))}
+                      <div>
+                        <p className="text-sm font-semibold">Entrée unique</p>
+                        <p className="text-xs text-muted-foreground">Ajoutez une image ou une URL</p>
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-dashed border-border/80 px-4 py-4 text-sm text-muted-foreground">
+                      Déposez un visuel ou lancez un audit d’URL
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <motion.div whileHover={{ y: -4 }} className="rounded-2xl border border-white/10 bg-background/55 p-5">
+                      <div className="mb-3 flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand/12">
+                          <FileImage className="h-5 w-5 text-brand" />
+                        </div>
+                        <div className="text-sm font-semibold">SEO visuel</div>
+                      </div>
+                      <div className="space-y-2 text-xs text-muted-foreground">
+                        <div className="rounded-xl border border-white/10 px-3 py-2">Alt text</div>
+                        <div className="rounded-xl border border-white/10 px-3 py-2">Filename</div>
+                        <div className="rounded-xl border border-white/10 px-3 py-2">Compression</div>
                       </div>
                     </motion.div>
-                  ))}
+
+                    <motion.div whileHover={{ y: -4 }} className="rounded-2xl border border-white/10 bg-background/55 p-5">
+                      <div className="mb-3 flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand/12">
+                          <Globe className="h-5 w-5 text-brand" />
+                        </div>
+                        <div className="text-sm font-semibold">SEO on-site</div>
+                      </div>
+                      <div className="space-y-2 text-xs text-muted-foreground">
+                        <div className="rounded-xl border border-white/10 px-3 py-2">Pages faibles</div>
+                        <div className="rounded-xl border border-white/10 px-3 py-2">Mots-clés</div>
+                        <div className="rounded-xl border border-white/10 px-3 py-2">Contenus</div>
+                      </div>
+                    </motion.div>
+                  </div>
                 </div>
               </div>
 
@@ -572,10 +564,10 @@ function Hero() {
 
                   <motion.div whileHover={{ scale: 1.01 }} className="rounded-2xl border border-border/60 bg-background/60 p-4">
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                      Opportunité mot-clé
+                      Opportunité keyword
                     </p>
                     <p className="mt-2 text-sm font-medium">
-                      “climatiseur mural salon moderne” présente un fort potentiel
+                      “climatiseur mural salon moderne” présente un potentiel élevé
                     </p>
                   </motion.div>
 
@@ -592,77 +584,6 @@ function Hero() {
             </div>
           </div>
         </motion.div>
-      </div>
-    </section>
-  )
-}
-
-function TrustBar() {
-  return (
-    <section className="py-6">
-      <div className="container max-w-6xl">
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
-          <span>E-commerce</span>
-          <span className="hidden h-1 w-1 rounded-full bg-border sm:inline-block" />
-          <span>Agences</span>
-          <span className="hidden h-1 w-1 rounded-full bg-border sm:inline-block" />
-          <span>Photographes</span>
-          <span className="hidden h-1 w-1 rounded-full bg-border sm:inline-block" />
-          <span>Créateurs</span>
-          <span className="hidden h-1 w-1 rounded-full bg-border sm:inline-block" />
-          <span>Équipes growth</span>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function Pillars() {
-  return (
-    <section className="py-24">
-      <div className="container max-w-6xl">
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          className="mx-auto mb-14 max-w-3xl text-center"
-        >
-          <motion.div variants={fadeUp}>
-            <Badge variant="brand" className="mb-4">
-              Vision produit
-            </Badge>
-          </motion.div>
-          <motion.h2 variants={fadeUp} custom={1} className="text-4xl font-black tracking-tight sm:text-5xl">
-            Plus qu’un outil,
-            <span className="gradient-brand"> un système SEO</span>
-          </motion.h2>
-        </motion.div>
-
-        <div className="grid gap-5 lg:grid-cols-3">
-          {pillars.map((item, i) => (
-            <motion.div
-              key={item.title}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-80px' }}
-              custom={i}
-              whileHover={{ y: -6, scale: 1.01 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Card className="h-full overflow-hidden border-border/60 bg-card/60 transition duration-300 hover:border-brand/40 hover:shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
-                <CardContent className="p-7">
-                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/12">
-                    <item.icon className="h-5 w-5 text-brand" />
-                  </div>
-                  <h3 className="text-xl font-bold tracking-tight">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.desc}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   )
@@ -690,7 +611,7 @@ function Modules() {
             <span className="gradient-brand">le futur de SeoPic</span>
           </motion.h2>
           <motion.p variants={fadeUp} custom={2} className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            Chaque agent couvre un angle précis du SEO, ensemble ils créent une plateforme beaucoup plus forte.
+            Quatre briques complémentaires, une seule plateforme, un récit beaucoup plus fort.
           </motion.p>
         </motion.div>
 
@@ -703,21 +624,27 @@ function Modules() {
               whileInView="visible"
               viewport={{ once: true, margin: '-80px' }}
               custom={i}
-              whileHover={{ y: -6 }}
+              whileHover={{ y: -6, scale: 1.01 }}
               transition={{ duration: 0.2 }}
             >
-              <Card className="h-full rounded-[28px] border border-white/10 bg-card/60 shadow-[0_20px_50px_rgba(0,0,0,0.12)] backdrop-blur-xl">
-                <CardContent className="p-7">
-                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-[20px] bg-brand/12">
+              <Card className="group relative h-full overflow-hidden rounded-[30px] border border-white/10 bg-card/60 shadow-[0_20px_50px_rgba(0,0,0,0.12)] backdrop-blur-xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-transparent to-brand/[0.04]" />
+                <motion.div
+                  animate={{ x: [0, 12, 0], y: [0, -10, 0] }}
+                  transition={{ duration: 9 + i, repeat: Infinity, ease: 'easeInOut' }}
+                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-brand/10 blur-3xl"
+                />
+                <CardContent className="relative p-7">
+                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-[20px] bg-brand/12 shadow-[0_0_24px_hsl(22_82%_55%/0.10)]">
                     <item.icon className="h-6 w-6 text-brand" />
                   </div>
                   <h3 className="text-2xl font-bold tracking-tight">{item.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.desc}</p>
                   <div className="mt-5 flex flex-wrap gap-2">
-                    {item.bullets.map((b) => (
+                    {item.chips.map((b) => (
                       <span
                         key={b}
-                        className="rounded-full border border-border bg-secondary px-3 py-1 text-xs text-muted-foreground"
+                        className="rounded-full border border-border bg-secondary px-3 py-1 text-xs text-muted-foreground transition group-hover:border-brand/20"
                       >
                         {b}
                       </span>
@@ -733,9 +660,9 @@ function Modules() {
   )
 }
 
-function HowItWorks() {
+function Workflow() {
   return (
-    <section id="how-it-works" className="py-24">
+    <section id="workflow" className="py-24">
       <div className="container max-w-6xl">
         <motion.div
           variants={stagger}
@@ -746,7 +673,7 @@ function HowItWorks() {
         >
           <motion.div variants={fadeUp}>
             <Badge variant="brand" className="mb-4">
-              Comment ça marche
+              Workflow
             </Badge>
           </motion.div>
           <motion.h2
@@ -770,7 +697,7 @@ function HowItWorks() {
           <div className="pointer-events-none absolute left-1/2 top-24 hidden h-[2px] w-[72%] -translate-x-1/2 bg-gradient-to-r from-transparent via-brand/40 to-transparent lg:block" />
 
           <div className="grid gap-6 lg:grid-cols-3">
-            {flowSteps.map((step, i) => (
+            {workflow.map((step, i) => (
               <motion.div
                 key={step.title}
                 variants={fadeUp}
@@ -868,7 +795,7 @@ function HowItWorks() {
                   </CardContent>
                 </Card>
 
-                {i < flowSteps.length - 1 && (
+                {i < workflow.length - 1 && (
                   <motion.div
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -1071,7 +998,7 @@ function FinalCTA() {
               <span className="gradient-brand">de vos images, pages et contenus</span>
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-muted-foreground">
-              Faites évoluer Seopic vers une vraie machine SEO visuelle et on-site,
+              Faites évoluer SeoPic vers une vraie machine SEO visuelle et on-site,
               pensée pour gagner du temps et créer de meilleurs résultats.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -1107,7 +1034,7 @@ function Footer() {
           </div>
 
           <p className="text-center text-sm text-muted-foreground">
-            © 2026 SeoPic · Produit de VALT Agency · Tanger, Maroc
+            © 2026 SeoPic · Produit de WE ARE VALT · Tanger, Maroc
           </p>
 
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -1163,11 +1090,9 @@ export default function Home() {
         <Hero />
         <TrustBar />
         <Separator />
-        <Pillars />
-        <Separator />
         <Modules />
         <Separator />
-        <HowItWorks />
+        <Workflow />
         <Separator />
         <Pricing />
         <Separator />
